@@ -34,6 +34,7 @@ CREATE TABLE players (
   username    VARCHAR(50)  NOT NULL UNIQUE,
   password    VARCHAR(255) NOT NULL,
   level       INT NOT NULL,
+  experience  INT NOT NULL DEFAULT 0,
   currency    INT NOT NULL DEFAULT 0,
   house_id    INT,
   FOREIGN KEY (level)    REFERENCES level(level),
