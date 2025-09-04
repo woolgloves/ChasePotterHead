@@ -1,0 +1,1 @@
+use schema1 file, to create the database in your local drive. (not /sql/schema, or wizardquest\sql\schema
