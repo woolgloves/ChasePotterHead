@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block title %}Battle{% endblock %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/battle.css' %}">
+
+<div class="battle-container">
+    <div class="battle-bg"></div>
+
+    <div class="battle-status">
+        <div class="player-info">
+            <h3>{{ player_name }}</h3>
+            <div class="hp-bar">
+                <div class="hp-fill" id="player-hp" style="width:100%"></div>
+            </div>
+            <p>Level: {{ player_level }} | EXP: {{ player_exp }}</p>
+        </div>
+
+        <div class="opponent-info">
+            <h3>{{ opponent_name }}</h3>
+            <div class="hp-bar">
+                <div class="hp-fill opponent" id="opponent-hp" style="width:100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="battle-actions">
+        <button class="btn" onclick="attack('player')">Attack</button>
+        <button class="btn" onclick="attack('opponent')">Opponent Attack</button>
+    </div>
+</div>
+
+<script>
+let playerHp = {{ player_hp }};
+let opponentHp = {{ opponent_hp }};
+const playerMaxHp = {{ player_max_hp }};
+const opponentMaxHp = {{ opponent_max_hp }};
+
+function attack(target){
+    const dmg = Math.floor(Math.random()*20)+5; // Random damage
+    if(target === 'player'){
+        playerHp -= dmg;
+        if(playerHp < 0) playerHp = 0;
+        document.getElementById('player-hp').style.width = (playerHp/playerMaxHp*100)+'%';
+    } else {
+        opponentHp -= dmg;
+        if(opponentHp < 0) opponentHp = 0;
+        document.getElementById('opponent-hp').style.width = (opponentHp/opponentMaxHp*100)+'%';
+    }
+
+    // Check end of battle
+    if(playerHp <= 0 || opponentHp <= 0){
+        const winner = playerHp > 0 ? {{ player_id }} : {{ opponent_id }};
+        window.location.href = `/battle/result/{{ opponent_id }}/${winner}/`;
+    }
+}
+</script>
+{% endblock %}

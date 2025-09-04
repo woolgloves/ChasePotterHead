@@ -30,7 +30,7 @@
                 {% for opponent in opponents %}
                     {% if opponent.2 == house.0 %}
                         <li>{{ opponent.1 }}
-                            <a href="#" class="btn btn-challenge">Challenge</a>
+                            <a href="{%url 'battle' opponent.0%}" class="btn btn-challenge">Challenge</a>
                         </li>
                     {% endif %}
                 {% endfor %}

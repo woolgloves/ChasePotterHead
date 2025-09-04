@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}Battle Result{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/battle.css' %}">
+
+<div class="battle-container">
+    <h2>{{ outcome }}</h2>
+    <p>{{ player_name }} gained {{ exp_gain }} EXP and {{ currency_gain }} currency!</p>
+    {% if player_level > 1 %}
+        <p>🎉 Level Up! New Level: {{ player_level }}</p>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    <a href="{% url 'shop' %}" class="btn btn-secondary">Go to Shop</a>
+</div>
+{% endblock %}
