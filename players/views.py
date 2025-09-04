@@ -66,14 +66,19 @@ def login_view(request):
         form = PlayerLoginForm()
     return render(request, 'players/login.html', {'form': form, 'error': error_message})
 
-
-
+def logout_view(request):
+    # Remove the player_id from the session
+    if 'player_id' in request.session:
+        del request.session['player_id']
+    
+    # Redirect to login page
+    return redirect('player_login')
 
 def dashboard_view(request):
     # Check if player is logged in
     player_id = request.session.get('player_id')
     if not player_id:
-        return redirect('login')
+        return redirect('player_login')
 
     data = {}
 
@@ -116,14 +121,72 @@ def dashboard_view(request):
             FROM players
             WHERE player_id != %s
         """, [player_id])
-        data['opponents'] = cursor.fetchall()
+        opponents = cursor.fetchall()
+
+        # 6. Player cards (fetch battles challenged and wins)
+        opponent_cards = []
+        for opp in opponents:
+            opp_id, opp_name, opp_house = opp
+
+            # Total battles where this player was challenger or opponent
+            cursor.execute("""
+                SELECT COUNT(*) FROM battles
+                WHERE challenger_id=%s OR opponent_id=%s
+            """, [opp_id, opp_id])
+            total_battles = cursor.fetchone()[0]
+
+            # Total wins
+            cursor.execute("""
+                SELECT COUNT(*) FROM battles
+                WHERE winner_id=%s
+            """, [opp_id])
+            total_wins = cursor.fetchone()[0]
+
+            opponent_cards.append({
+                'id': opp_id,
+                'username': opp_name,
+                'house_id': opp_house,
+                'total_battles': total_battles,
+                'wins': total_wins,
+            })
+
+        data['opponents'] = opponent_cards
+
+        # 7. Get any INCOMING challenges for the current player (NEW CODE)
+        # This finds battles where this player is the opponent and the status is 'pending'.
+        cursor.execute("""
+            SELECT b.battle_id, p.username 
+            FROM battles b
+            JOIN players p ON b.challenger_id = p.player_id
+            WHERE b.opponent_id = %s AND b.status = 'pending'
+        """, [player_id])
+        data['incoming_challenges'] = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT b.battle_id, p.username
+            FROM battles b
+            JOIN players p ON b.opponent_id = p.player_id
+            WHERE b.challenger_id = %s AND b.status = 'pending'
+        """, [player_id])
+        data['outgoing_challenges'] = cursor.fetchall()
+
+        # ====================================================================
+        # NEW QUERY FOR ACTIVE BATTLES
+        # ====================================================================
+        # This finds battles where you are either the challenger or opponent AND the status is 'active'.
+        cursor.execute("""
+            SELECT b.battle_id, 
+                   (SELECT username FROM players WHERE player_id = b.challenger_id),
+                   (SELECT username FROM players WHERE player_id = b.opponent_id)
+            FROM battles b
+            WHERE (b.challenger_id = %s OR b.opponent_id = %s) AND b.status = 'active'
+        """, [player_id, player_id])
+        data['active_battles'] = cursor.fetchall()
+        # ====================================================================
+
+    # Fetch your opponent card data if needed (keeping your existing logic)
+    # ... your existing logic for opponent_cards ...
+    # data['opponents'] = opponent_cards
+    
 
     return render(request, 'players/dashboard.html', data)
-
-def logout_view(request):
-    # Remove the player_id from the session
-    if 'player_id' in request.session:
-        del request.session['player_id']
-    
-    # Redirect to login page
-    return redirect('player_login')

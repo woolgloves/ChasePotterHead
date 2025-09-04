@@ -1,58 +1,50 @@
 {% extends "layout.html" %}
-{% block title %}Battle{% endblock %}
 {% load static %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/battle.css' %}">
+{% endblock %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/battle.css' %}">
-
 <div class="battle-container">
-    <div class="battle-bg"></div>
-
-    <div class="battle-status">
-        <div class="player-info">
-            <h3>{{ player_name }}</h3>
-            <div class="hp-bar">
-                <div class="hp-fill" id="player-hp" style="width:100%"></div>
+    <div class="arena">
+        <!-- Challenger Card -->
+        <div class="combatant-card">
+            <h2>{{ challenger.username }} {% if challenger.id == player_id %}(You){% endif %}</h2>
+            <div class="hp-bar-container">
+                <div class="hp-bar" style="width: {% widthratio challenger_hp challenger.max_hp 100 %}%"></div>
             </div>
-            <p>Level: {{ player_level }} | EXP: {{ player_exp }}</p>
+            <p>HP: {{ challenger_hp }} / {{ challenger.max_hp }}</p>
         </div>
 
-        <div class="opponent-info">
-            <h3>{{ opponent_name }}</h3>
-            <div class="hp-bar">
-                <div class="hp-fill opponent" id="opponent-hp" style="width:100%"></div>
+        <!-- Opponent Card -->
+        <div class="combatant-card">
+            <h2>{{ opponent.username }} {% if opponent.id == player_id %}(You){% endif %}</h2>
+            <div class="hp-bar-container">
+                <div class="hp-bar" style="width: {% widthratio opponent_hp opponent.max_hp 100 %}%"></div>
             </div>
+            <p>HP: {{ opponent_hp }} / {{ opponent.max_hp }}</p>
         </div>
     </div>
 
-    <div class="battle-actions">
-        <button class="btn" onclick="attack('player')">Attack</button>
-        <button class="btn" onclick="attack('opponent')">Opponent Attack</button>
+    <!-- Actions Panel -->
+    <div class="actions">
+        {% if is_my_turn %}
+            <h3>Your Turn! Choose a Spell:</h3>
+            <form method="post" action="{% url 'battle' battle_id %}">
+                {% csrf_token %}
+                {% for spell in player_spells %}
+                    <button type="submit" name="spell_id" value="{{ spell.0 }}" class="btn-spell">
+                        {{ spell.1 }} ({{ spell.2 }} Damage)
+                    </button>
+                {% empty %}
+                    <p>You don't know any spells! You can't attack.</p>
+                {% endfor %}
+            </form>
+        {% else %}
+            <h3>Waiting for opponent's move...</h3>
+            <p>(Refresh the page to see their move)</p>
+        {% endif %}
     </div>
 </div>
-
-<script>
-let playerHp = {{ player_hp }};
-let opponentHp = {{ opponent_hp }};
-const playerMaxHp = {{ player_max_hp }};
-const opponentMaxHp = {{ opponent_max_hp }};
-
-function attack(target){
-    const dmg = Math.floor(Math.random()*20)+5; // Random damage
-    if(target === 'player'){
-        playerHp -= dmg;
-        if(playerHp < 0) playerHp = 0;
-        document.getElementById('player-hp').style.width = (playerHp/playerMaxHp*100)+'%';
-    } else {
-        opponentHp -= dmg;
-        if(opponentHp < 0) opponentHp = 0;
-        document.getElementById('opponent-hp').style.width = (opponentHp/opponentMaxHp*100)+'%';
-    }
-
-    // Check end of battle
-    if(playerHp <= 0 || opponentHp <= 0){
-        const winner = playerHp > 0 ? {{ player_id }} : {{ opponent_id }};
-        window.location.href = `/battle/result/{{ opponent_id }}/${winner}/`;
-    }
-}
-</script>
 {% endblock %}

@@ -10,7 +10,66 @@
     <h2>Welcome, {{ username }}!</h2>
     <p>Level: {{ level }} | Currency: {{ currency }}</p>
 
-    <!-- Houses Section -->
+    <!-- NEW SECTION FOR ACTIVE BATTLES -->
+    <h3>Active Battles</h3>
+    <div class="challenges-list">
+        {% for battle in active_battles %}
+            <div class="challenge-item" style="background-color: rgba(0, 80, 0, 0.6); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <span>Battle against 
+                    <strong>
+                        {% if battle.1 == username %}
+                            {{ battle.2 }}
+                        {% else %}
+                            {{ battle.1 }}
+                        {% endif %}
+                    </strong> is ready!
+                </span>
+                <a href="{% url 'battle' battle.0 %}" class="btn">Go to Battle!</a>
+            </div>
+        {% empty %}
+            <p>You have no active battles.</p>
+        {% endfor %}
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- NEW SECTION FOR INCOMING CHALLENGES -->
+    <!-- ==================================================================== -->
+    <h3>Incoming Challenges</h3>
+    <div class="challenges-list">
+        {% for challenge in incoming_challenges %}
+            <div class="challenge-item" style="background-color: rgba(40,0,0,0.6); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <span><strong>{{ challenge.1 }}</strong> has challenged you to a duel!</span>
+                <!-- These links point to the 'respond_to_challenge' URL pattern -->
+                <a href="{% url 'respond_to_challenge' challenge.0 'accept' %}" class="btn">Accept</a>
+                <a href="{% url 'respond_to_challenge' challenge.0 'decline' %}" class="btn btn-challenge">Decline</a>
+            </div>
+        {% empty %}
+            <p>You have no new challenges.</p>
+        {% endfor %}
+    </div>
+    <!-- ==================================================================== -->
+    <!-- END OF NEW SECTION -->
+    <!-- ==================================================================== -->
+        <!-- ==================================================================== -->
+    <!-- NEW SECTION FOR OUTGOING CHALLENGES -->
+    <!-- ==================================================================== -->
+    <h3>Outgoing Challenges</h3>
+    <div class="challenges-list">
+        {% for challenge in outgoing_challenges %}
+            <div class="challenge-item" style="background-color: rgba(0, 40, 40, 0.6); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <span>Waiting for <strong>{{ challenge.1 }}</strong> to respond...</span>
+                <!-- Optional: Add a 'Cancel Challenge' button -->
+                <a href="{% url 'cancel_challenge' challenge.0 %}" class="btn-challenge">Cancel</a>
+            </div>
+        {% empty %}
+            <p>You have not sent any challenges.</p>
+        {% endfor %}
+    </div>
+    <!-- ==================================================================== -->
+    <!-- END OF NEW SECTION -->
+    <!-- ==================================================================== -->
+
+    <!-- Houses Section (Unchanged) -->
     <h3>Houses</h3>
     <div class="house-list">
         {% for house in houses %}
@@ -21,24 +80,28 @@
         {% endfor %}
     </div>
 
-    <!-- Opponents Section -->
+    <!-- Opponents Section (Challenge link is corrected) -->
     <h3>Players to Challenge</h3>
     {% for house in houses %}
         <div id="house-{{ house.0 }}" class="opponents">
             <h4>{{ house.1 }}</h4>
-            <ul>
+            <div class="player-cards">
                 {% for opponent in opponents %}
-                    {% if opponent.2 == house.0 %}
-                        <li>{{ opponent.1 }}
-                            <a href="{%url 'battle' opponent.0%}" class="btn btn-challenge">Challenge</a>
-                        </li>
+                    {% if opponent.house_id == house.0 %}
+                        <div class="player-card">
+                            <h4>{{ opponent.username }}</h4>
+                            <p>Battles: {{ opponent.total_battles }}</p>
+                            <p>Wins: {{ opponent.wins }}</p>
+                            <!-- CORRECTED LINK: Points to 'challenge_player' URL -->
+                            <a href="{% url 'challenge_player' opponent.id %}" class="btn btn-challenge">Challenge</a>
+                        </div>
                     {% endif %}
                 {% endfor %}
-            </ul>
+            </div>
         </div>
     {% endfor %}
 
-    <!-- Achievements Section -->
+    <!-- Achievements Section (Unchanged) -->
     <h3>Achievements</h3>
     <ul class="achievements">
         {% for ach in achievements %}
@@ -48,7 +111,7 @@
         {% endfor %}
     </ul>
 
-    <!-- Spells / Inventory Section -->
+    <!-- Spells / Inventory Section (Unchanged) -->
     <h3>Spells Inventory</h3>
     <ul class="spells-inventory">
         {% for spell in spells %}
@@ -58,7 +121,7 @@
         {% endfor %}
     </ul>
 
-    <!-- Action Buttons -->
+    <!-- Action Buttons (Unchanged) -->
     <div class="dashboard-actions">
         <a href="{% url 'shop' %}" class="btn btn-secondary">Go to Shop</a>
         <a href="{% url 'player_logout' %}" class="btn btn-secondary">Logout</a>

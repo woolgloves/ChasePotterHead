@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Pending Challenges</h2>
+<ul>
+  {% for c in pending %}
+    <li>{{ c.1 }}
+      <a href="{% url 'accept_challenge' c.0 %}">Accept</a>
+      <a href="{% url 'decline_challenge' c.0 %}">Decline</a>
+    </li>
+  {% empty %}
+    <li>No pending challenges.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

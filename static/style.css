@@ -136,6 +136,39 @@ h2, h3, h4 {
     margin-left: 10px;
 }
 
+/* Player Cards Section */
+.player-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.player-card {
+    background-color: rgba(0,0,0,0.6);
+    border: 1px solid #fff;
+    border-radius: 8px;
+    padding: 10px 15px;
+    width: 200px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.player-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
+
+.player-card h4 {
+    margin: 5px 0;
+}
+
+.player-card p {
+    margin: 3px 0;
+    font-size: 14px;
+}
+
+
 
 .shop-page {
     text-align: center;

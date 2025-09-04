@@ -1,18 +1,30 @@
 {% extends "layout.html" %}
-{% load static %}
-{% block title %}Battle Result{% endblock %}
-
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/battle.css' %}">
-
-<div class="battle-container">
-    <h2>{{ outcome }}</h2>
-    <p>{{ player_name }} gained {{ exp_gain }} EXP and {{ currency_gain }} currency!</p>
-    {% if player_level > 1 %}
-        <p>🎉 Level Up! New Level: {{ player_level }}</p>
+<div style="text-align: center; padding: 50px;">
+    
+    {% if is_winner %}
+        <h1>Congratulations, You Won!</h1>
+    {% else %}
+        <h1>You Were Defeated</h1>
     {% endif %}
+    
+    <h2>{{ outcome }}</h2>
 
-    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
-    <a href="{% url 'shop' %}" class="btn btn-secondary">Go to Shop</a>
+    <div class="rewards" style="margin-top: 20px; border: 1px solid #555; padding: 15px; border-radius: 8px; display: inline-block;">
+        <h4>Battle Report</h4>
+        <p>Experience Gained: +{{ exp_gain }} XP</p>
+        <p>Currency Gained: +{{ currency_gain }} Gold</p>
+    </div>
+
+    {% if level_up %}
+        <div class="level-up" style="margin-top: 20px; color: gold;">
+            <h2>LEVEL UP!</h2>
+            <p>You have advanced from Level {{ old_level }} to Level {{ new_level }}!</p>
+        </div>
+    {% endif %}
+    
+    <br>
+    <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 30px;">Return to Dashboard</a>
+
 </div>
 {% endblock %}
