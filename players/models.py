@@ -1,7 +1,7 @@
 from django.db import connection
 from django.contrib.auth.hashers import make_password, check_password
 
-def create_player(username, raw_password, level=1, currency=0, house_id=None):
+def create_player(username, raw_password, level=1, currency=100, house_id=None):
     hashed_pw = make_password(raw_password)
     with connection.cursor() as cursor:
         cursor.execute(

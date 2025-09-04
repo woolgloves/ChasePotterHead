@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Background -->
+    <div class="dashboard-bg"></div>
+
+    <!-- Player Info -->
+    <h2>Welcome, {{ username }}!</h2>
+    <p>Level: {{ level }} | Currency: {{ currency }}</p>
+
+    <!-- Houses Section -->
+    <h3>Houses</h3>
+    <div class="house-list">
+        {% for house in houses %}
+            <div class="house-card {% if house.0 == player_house_id %}my-house{% endif %}">
+                <h4>{{ house.1 }}</h4>
+                <a href="#house-{{ house.0 }}" class="btn">View Players</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Opponents Section -->
+    <h3>Players to Challenge</h3>
+    {% for house in houses %}
+        <div id="house-{{ house.0 }}" class="opponents">
+            <h4>{{ house.1 }}</h4>
+            <ul>
+                {% for opponent in opponents %}
+                    {% if opponent.2 == house.0 %}
+                        <li>{{ opponent.1 }}
+                            <a href="#" class="btn btn-challenge">Challenge</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+
+    <!-- Achievements Section -->
+    <h3>Achievements</h3>
+    <ul class="achievements">
+        {% for ach in achievements %}
+            <li>{{ ach.0 }} - {{ ach.1 }} points (Awarded: {{ ach.2 }})</li>
+        {% empty %}
+            <li>No achievements yet.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Spells / Inventory Section -->
+    <h3>Spells Inventory</h3>
+    <ul class="spells-inventory">
+        {% for spell in spells %}
+            <li>{{ spell.0 }} - Damage: {{ spell.1 }}, Mana: {{ spell.2 }}</li>
+        {% empty %}
+            <li>No spells yet.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Action Buttons -->
+    <div class="dashboard-actions">
+        <a href="{% url 'shop' %}" class="btn btn-secondary">Go to Shop</a>
+        <a href="{% url 'player_logout' %}" class="btn btn-secondary">Logout</a>
+    </div>
+</div>
+{% endblock %}

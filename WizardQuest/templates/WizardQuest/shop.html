@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Wizard Shop{% endblock %}
+
+{% block content %}
+<div class="shop-page">
+    <h2>Welcome to the Wizard Shop, {{ username }}!</h2>
+    <p>Your Currency: <strong>{{ currency }}</strong></p>
+
+    {% if message %}
+        <p class="shop-message">{{ message }}</p>
+    {% endif %}
+
+    <div class="shop-container">
+        {% for spell in spells %}
+            <div class="spell-card {% if spell.owned %}owned{% endif %}">
+                <h3>{{ spell.name }}</h3>
+                <p>Damage: {{ spell.damage }}</p>
+                <p>Mana: {{ spell.mana_cost }}</p>
+
+                {% if spell.owned %}
+                    <button disabled class="btn-owned">Owned</button>
+                {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="spell_id" value="{{ spell.id }}">
+                        <button type="submit" class="btn-buy">Buy for {{ spell.price }}</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'dashboard' %}" class="btn-back">Back to Dashboard</a>
+</div>
+{% endblock %}

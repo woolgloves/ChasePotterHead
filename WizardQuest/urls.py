@@ -2,8 +2,8 @@
 from django.urls import path
 from . import views
 
-urlpatterns = [
-    path('', views.index, name='wizardquest-index'),  # root of wizardquest/
+urlpatterns = [  
+    path('shop/', views.shop_view, name='shop'),
 ]
 
 

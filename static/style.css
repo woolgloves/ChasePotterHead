@@ -48,3 +48,159 @@ p {
 .btn-secondary:hover {
     background-color: #0069d9;
 }
+
+
+/* ---------------- DASHBOARD STYLES ---------------- */
+.dashboard-container {
+    position: relative;
+    padding: 30px;
+    color: #fff;
+}
+
+.dashboard-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('/static/background.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+h2, h3, h4 {
+    margin: 10px 0;
+}
+
+.house-list {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.house-card {
+    flex: 1 1 200px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.house-card.my-house {
+    border: 2px solid gold;
+}
+
+.opponents {
+    background-color: rgba(0,0,0,0.4);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.opponents ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.achievements, .spells-inventory {
+    background-color: rgba(0,0,0,0.4);
+    padding: 10px;
+    border-radius: 8px;
+    list-style-type: none;
+}
+
+.achievements li, .spells-inventory li {
+    margin-bottom: 5px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 5px 12px;
+    margin-top: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-secondary {
+    background-color: #007BFF;
+}
+
+.btn-challenge {
+    background-color: #FF4500;
+    margin-left: 10px;
+}
+
+
+.shop-page {
+    text-align: center;
+    padding: 20px;
+    background-image: url("/static/images/magic-bg.jpg"); /* Optional magical background */
+    background-size: cover;
+    color: #fff;
+}
+
+.shop-message {
+    margin: 10px 0;
+    font-weight: bold;
+    color: #ffdd57;
+}
+
+.shop-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.spell-card {
+    background-color: rgba(0, 0, 50, 0.8);
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    width: 180px;
+    color: #fff;
+    text-align: center;
+}
+
+.spell-card.owned {
+    opacity: 0.6;
+}
+
+.btn-buy, .btn-owned {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.btn-buy {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.btn-owned {
+    background-color: #888;
+    color: #fff;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 10px 15px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    background-color: #555;
+}

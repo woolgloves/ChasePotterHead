@@ -14,3 +14,6 @@ class PlayerSignUpForm(forms.Form):
             raise forms.ValidationError("Passwords do not match!")
 
         return cleaned_data
+class PlayerLoginForm(forms.Form):  # <--- CHECK THIS LINE
+    username = forms.CharField(max_length=50)
+    password = forms.CharField(widget=forms.PasswordInput)
