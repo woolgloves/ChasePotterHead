@@ -235,6 +235,7 @@ def battle_view(request, battle_id):
         'player_spells': player_spells,
         'is_my_turn': (current_turn_player_id == player_id),
         'player_id': player_id,
+        'username': request.session.get('username')
     }
     return render(request, 'WizardQuest/battle.html', context)
 
@@ -298,6 +299,8 @@ def battle_result_view(request, battle_id):
                 SET level = %s, experience = %s, currency = currency + %s
                 WHERE player_id = %s
             """, [new_level, new_exp, currency_gain, winner_id])
+
+            check_and_award_achievements(cursor, winner_id)
         
         # --- UPDATE DATABASE FOR THE LOSER (Optional, but good practice) ---
         else:
@@ -322,6 +325,8 @@ def battle_result_view(request, battle_id):
         'old_level': winner_level,
         'new_level': new_level,
     }
+    
+
     return render(request, 'WizardQuest/battle_result.html', context)
 
 def cancel_challenge_view(request, battle_id):
@@ -341,3 +346,85 @@ def xp_for_next_level(current_level):
     # This is a simple formula, you can make it more complex
     # e.g., 100 for level 1, 150 for level 2, 200 for level 3, etc.
     return 100 + (current_level * 10)
+
+def check_and_award_achievements(cursor, player_id):
+    """
+    Checks all conditions for achievements using their IDs and awards them
+    if not already earned. This is the robust, ID-based version.
+    """
+    
+    # Get all achievements the player has already earned
+    cursor.execute("SELECT achievement_id FROM is_awarded WHERE player_id = %s", [player_id])
+    earned_ids = {row[0] for row in cursor.fetchall()}
+
+    # --- Achievement ID 1: First Victory ---
+    if 1 not in earned_ids:
+        cursor.execute("SELECT COUNT(*) FROM battles WHERE winner_id = %s", [player_id])
+        win_count = cursor.fetchone()[0]
+        if win_count >= 1:
+            cursor.execute("INSERT INTO is_awarded (player_id, achievement_id) VALUES (%s, %s)", [player_id, 1])
+            earned_ids.add(1) # Add to our set to prevent re-checking in this run
+
+    # --- Achievement IDs 2-5: Defeat a player from each house ---
+    # This maps your database house_id to the corresponding achievement_id
+    house_to_achievement_map = {
+        1: 2,  # Defeating house_id 1 (e.g., Gryffindor) unlocks achievement_id 2
+        2: 3,  # Defeating house_id 2 (e.g., Ravenclaw) unlocks achievement_id 3
+        3: 4,  # etc.
+        4: 5,
+    }
+    
+    unearned_house_ach_ids = {ach_id for ach_id in house_to_achievement_map.values() if ach_id not in earned_ids}
+    if unearned_house_ach_ids:
+        # Get a list of houses of players this player has defeated
+        cursor.execute("""
+            SELECT DISTINCT p.house_id FROM players p
+            JOIN battles b ON (p.player_id = b.challenger_id OR p.player_id = b.opponent_id)
+            WHERE b.winner_id = %s AND p.player_id != %s
+        """, [player_id, player_id])
+        defeated_house_ids = {row[0] for row in cursor.fetchall()}
+
+        for house_id, ach_id in house_to_achievement_map.items():
+            if ach_id in unearned_house_ach_ids and house_id in defeated_house_ids:
+                cursor.execute("INSERT INTO is_awarded (player_id, achievement_id) VALUES (%s, %s)", [player_id, ach_id])
+
+    # --- Achievement ID 6: Win 10 battles ---
+    if 6 not in earned_ids:
+        cursor.execute("SELECT COUNT(*) FROM battles WHERE winner_id = %s", [player_id])
+        win_count = cursor.fetchone()[0]
+        if win_count >= 10:
+             cursor.execute("INSERT INTO is_awarded (player_id, achievement_id) VALUES (%s, %s)", [player_id, 6])
+             earned_ids.add(6)
+
+    # --- Add more ID-based checks here in the future ---
+
+
+def achievements_list_view(request):
+    """The view for the page that shows all achievements."""
+    player_id = request.session.get('player_id')
+    if not player_id:
+        return redirect('player_login')
+
+    with connection.cursor() as cursor:
+        # 1. Get ALL achievements from the database
+        cursor.execute("SELECT achievement_id, achievement_title, points_awarded FROM achievements ORDER BY achievement_id")
+        all_achievements = cursor.fetchall()
+
+        # 2. Get the IDs of achievements this player has earned
+        cursor.execute("SELECT achievement_id FROM is_awarded WHERE player_id = %s", [player_id])
+        earned_ids = {row[0] for row in cursor.fetchall()}
+
+    # 3. Combine the two lists to create a final list for the template
+    achievements_with_status = []
+    for ach_id, title, points in all_achievements:
+        achievements_with_status.append({
+            'id': ach_id,
+            'title': title,
+            'points': points,
+            'unlocked': (ach_id in earned_ids)
+        })
+
+    context = {
+        'all_achievements': achievements_with_status
+    }
+    return render(request, 'WizardQuest/achievements_list.html', context)

@@ -7,15 +7,37 @@
     <title>
         {% block title %}Wizard Quest{% endblock %}
     </title>
+    <!-- Main stylesheet for the entire site -->
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <!-- This block allows child pages (like battle.html) to add their own stylesheets -->
+    {% block extra_styles %}{% endblock %}
 </head>
 <body>
     <header>
         <h1>Wizard Quest</h1>
         <nav>
-            <a href="#">Home</a>
-            <a href="#">Login</a>
-            <a href="#">Signup</a>
+            {% if username %}
+                <!-- === NAVIGATION FOR LOGGED-IN USERS === -->
+
+                <!-- The "Home" link now goes to the player's dashboard -->
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                
+                <!-- Welcome message and a Logout link -->
+                {% comment %} <span>Welcome, {{ username }}!</span> {% endcomment %}
+                <a href="{% url 'player_logout' %}">Logout</a>
+
+            {% else %}
+                <!-- === NAVIGATION FOR LOGGED-OUT USERS === -->
+
+                <!-- The "Home" link goes to the public homepage -->
+                <a href="{% url 'dashboard' %}">Home</a>
+
+                <!-- Links to the login and signup pages -->
+                <a href="{% url 'player_login' %}">Login</a>
+                <a href="{% url 'player_signup' %}">Sign Up</a>
+                
+            {% endif %}
         </nav>
     </header>
 

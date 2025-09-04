@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Achievements{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 30px; color: #fff; max-width: 800px; margin: auto;">
+    <h2 style="text-align: center; margin-bottom: 20px;">All Achievements</h2>
+    
+    <ul class="achievements-list" style="list-style-type: none; padding: 0;">
+        {% for ach in all_achievements %}
+            <li style="background-color: rgba(0,0,0,0.4); padding: 15px; margin-bottom: 10px; border-radius: 8px; {% if not ach.unlocked %}opacity: 0.5; border-left: 5px solid #555;{% else %}border-left: 5px solid gold;{% endif %}">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0;">{{ ach.title }}</h4>
+                    {% if ach.unlocked %}
+                        <strong style="color: gold;">UNLOCKED</strong>
+                    {% else %}
+                        <strong>LOCKED</strong>
+                    {% endif %}
+                </div>
+                <p style="margin: 5px 0 0 0;">Points: {{ ach.points }}</p>
+
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

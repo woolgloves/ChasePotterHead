@@ -11,6 +11,7 @@ urlpatterns = [
     path('battle/<int:battle_id>/', views.battle_view, name='battle'),
     path('cancel_challenge/<int:battle_id>/', views.cancel_challenge_view, name='cancel_challenge'),
     path('battle_result/<int:battle_id>/', views.battle_result_view, name='battle_result'),
+    path('achievements/', views.achievements_list_view, name='achievements_list'),
 ]
 
 
