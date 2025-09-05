@@ -1,1 +1,24 @@
 use schema1 file, to create the database in your local drive. (not /sql/schema, or wizardquest\sql\schema
+
+open up xamp, run your server. create the database according to schema1 in chasepotterhead/schema1.sql
+
+insert these in your database
+
+INSERT INTO spells (name, damage, price, unlock_level, mana_cost)
+VALUES 
+('Fireball', 50, 200, 1, 30),
+('Ice Spike', 40, 150, 1, 25),
+('Lightning Bolt', 60, 300, 2, 35),
+('Magic Missile', 30, 100, 1, 20),
+('Earthquake', 70, 400, 3, 50);
+
+INSERT INTO achievements (achievement_id, achievement_title, points_awarded) VALUES
+(1, 'First Victory', 100),
+(2, 'Gryffindor Grinder', 100),
+(3, 'Ravenclaw Rival', 100),
+(4, 'Hufflepuff Humbler', 100),
+(5, 'Slytherin Subduer', 100);
+
+INSERT INTO level (level, max_hp) VALUES (1, 100);
+INSERT INTO level (level, max_hp) VALUES (2, 120);
+INSERT INTO level (level, max_hp) VALUES (3, 150);
